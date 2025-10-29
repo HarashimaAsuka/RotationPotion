@@ -6,33 +6,45 @@ public class RotationPotion : MonoBehaviour
     [SerializeField] private GameObject targetObject;
     private bool hasTriggered = false;
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        //衝突相手がターゲットの場合
+        // 衝突相手がターゲットの場合
         if (!hasTriggered && other.gameObject == targetObject)
         {
             hasTriggered = true;
             StartCoroutine(RotateAndShrinkCoroutine());
         }
     }
-    
+
     private IEnumerator RotateAndShrinkCoroutine()
     {
-        //回転アニメーション
-        float duration = 1f;
+        float duration = 1f; // 回転時間
         float elapsed = 0f;
-        Quaternion startRot = transform.rotation;
-        Quaternion endRot = transform.rotation * Quaternion.Euler(0, 360, 0);
+
+        // 回転の開始角度と終了角度（Z軸のみ）
+        float startZ = transform.eulerAngles.z;
+        float endZ = startZ + 360f;
+
+        Vector3 startScale = transform.localScale;
+        Vector3 endScale = Vector3.zero;
 
         while (elapsed < duration)
         {
-            transform.rotation = Quaternion.Slerp(startRot, endRot, elapsed / duration);
+            float t = elapsed / duration;
+
+            // Z軸回転
+            float z = Mathf.Lerp(startZ, endZ, t);
+            transform.eulerAngles = new Vector3(0, 0, z);
+
+            // スケールを徐々に縮小
+            transform.localScale = Vector3.Lerp(startScale, endScale, t);
+
             elapsed += Time.deltaTime;
             yield return null;
         }
-        transform.rotation = endRot;
 
-        //スケール0,0,0
-        transform.localScale = Vector3.zero;
+        // 最終値を確実にセット
+        transform.eulerAngles = new Vector3(0, 0, endZ);
+        transform.localScale = endScale;
     }
 }
