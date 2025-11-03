@@ -4,14 +4,28 @@ using System.Collections;
 public class RotationPotion : MonoBehaviour
 {
     [SerializeField] private GameObject targetObject;
-    private bool hasTriggered = false;
+    [SerializeField] private GameObject matchoman;
+    [SerializeField] private GameObject backgroundClear;
+    [SerializeField] private GameObject backgroundStart;
+    
+    private static int numPotion;
+
+    void Start()
+    {
+        numPotion = 0;
+        targetObject.SetActive(true);
+        matchoman.SetActive(false);
+        backgroundClear.SetActive(false);
+        backgroundStart.SetActive(true);
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         // 衝突相手がターゲットの場合
-        if (!hasTriggered && other.gameObject == targetObject)
+        if (other.gameObject == targetObject)
         {
-            hasTriggered = true;
+            numPotion++;
+            Debug.Log(numPotion);
             StartCoroutine(RotateAndShrinkCoroutine());
         }
     }
@@ -46,5 +60,16 @@ public class RotationPotion : MonoBehaviour
         // 最終値を確実にセット
         transform.eulerAngles = new Vector3(0, 0, endZ);
         transform.localScale = endScale;
+    }
+
+    void Update()
+    {
+        if(numPotion == 5)
+        {
+            targetObject.SetActive(false);
+            matchoman.SetActive(true);
+            backgroundClear.SetActive(true);
+            backgroundStart.SetActive(false);
+        }
     }
 }
