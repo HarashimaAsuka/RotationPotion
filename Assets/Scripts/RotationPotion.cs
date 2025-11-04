@@ -7,6 +7,11 @@ public class RotationPotion : MonoBehaviour
     [SerializeField] private GameObject matchoman;
     [SerializeField] private GameObject backgroundClear;
     [SerializeField] private GameObject backgroundStart;
+    [SerializeField] private AudioSource kira;
+    [SerializeField] private AudioClip kiraA;
+    [SerializeField] private AudioSource ban;
+    [SerializeField] private AudioClip banA;
+    private bool cleared = false;
     
     private static int numPotion;
 
@@ -27,6 +32,7 @@ public class RotationPotion : MonoBehaviour
             numPotion++;
             Debug.Log(numPotion);
             StartCoroutine(RotateAndShrinkCoroutine());
+            kira.PlayOneShot(kiraA);
         }
     }
 
@@ -64,12 +70,14 @@ public class RotationPotion : MonoBehaviour
 
     void Update()
     {
-        if(numPotion == 5)
+        if(!cleared && numPotion >= 5)
         {
+            cleared = true;
             targetObject.SetActive(false);
             matchoman.SetActive(true);
             backgroundClear.SetActive(true);
             backgroundStart.SetActive(false);
+            ban.PlayOneShot(banA);
         }
     }
 }
